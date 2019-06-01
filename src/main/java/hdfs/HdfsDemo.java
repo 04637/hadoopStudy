@@ -1,38 +1,39 @@
 package hdfs;
 
 
-import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
- * @description: HDFS 学习
+ * HDFS 学习
+ *
  * @author: 04637@163.com
  * @date: 2019/5/15
  */
 public class HdfsDemo {
-    public static void main(String[] args) {
-        uploadFile();
+
+
+
+    public static void main(String[] args) throws IOException {
+        Configuration conf = new Configuration();
+        conf.set("fs.defaultFS", "hdfs://192.168.137.101:9820");
+        System.setProperty("HADOOP_USER_NAME", "root");
+        uploadFile(conf);
+        listFile(new Path("/"), conf);
+        downloadFile(conf);
     }
 
     /**
      * 创建文件夹
      */
-    public static void createFolder() {
-        Configuration conf = new Configuration();
-        try {
-            FileSystem fs = FileSystem.get(conf);
-            Path path = new Path("/cloud");
-            fs.mkdirs(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void createFolder(Configuration conf) throws IOException {
+        Path path = new Path("/hello2");
+        FileSystem fileSystem = path.getFileSystem(conf);
+        fileSystem.mkdirs(path);
     }
 
     /**
@@ -40,8 +41,7 @@ public class HdfsDemo {
      *
      * @param path 要显示的路径
      */
-    public static void listFile(Path path) {
-        Configuration conf = new Configuration();
+    public static void listFile(Path path, Configuration conf) {
         try {
             FileSystem fs = FileSystem.get(conf);
             // 传入路径, 表示显示某个路径下的文件夹列表
@@ -51,9 +51,9 @@ public class HdfsDemo {
             for (int i = 0; i < fileStatusArray.length; i++) {
                 FileStatus fileStatus = fileStatusArray[i];
                 // 首先检测当前是否是文件夹, 如果是, 进行递归
-                if (fileStatus.isDir()) {
+                if (fileStatus.isDirectory()) {
                     System.out.println("当前路径是: " + fileStatus.getPath());
-                    listFile(path);
+                    listFile(fileStatus.getPath(), conf);
                 } else {
                     System.out.println("当前路径是: " + fileStatus.getPath());
                 }
@@ -64,16 +64,12 @@ public class HdfsDemo {
     }
 
 
-    public static void uploadFile(){
-        Configuration conf = new Configuration();
-        conf.set("fs.defaultFS", "hdfs://192.168.204.181:9000");
-        //通过这种方式设置java客户端身份
-        System.setProperty("HADOOP_USER_NAME", "root");
+    public static void uploadFile(Configuration conf){
         try{
             FileSystem fs = FileSystem.get(conf);
             // 定义文件的路径和上传路径
             Path src = new Path("D://test.txt");
-            Path dest = new Path("cloud/upload.doc");
+            Path dest = new Path("/hello2");
             // 从本地上传文件到服务器上
             fs.copyFromLocalFile(src, dest);
         }catch(IOException e){
@@ -81,13 +77,12 @@ public class HdfsDemo {
         }
     }
 
-    public static void downloadFile(){
-        Configuration conf = new Configuration();
+    public static void downloadFile(Configuration conf){
         try{
             FileSystem fs = FileSystem.get(conf);
             // 定义下载文件的路径和本地下载路径
-            Path src = new Path("/cloud/download.doc");
-            Path dest = new Path("e://download.doc");
+            Path src = new Path("/hello2/test.txt");
+            Path dest = new Path("D://download.doc");
             // 从服务器下载文件到本地
             fs.copyToLocalFile(src, dest);
         }catch (IOException e){

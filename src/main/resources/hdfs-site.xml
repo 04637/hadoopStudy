@@ -20,11 +20,7 @@
 <configuration>
 <property>
 <name>dfs.namenode.secondary.http-address</name>
-<value>192.168.204.181:9870</value>
-</property>
-<property>
-<name>dfs.namenode.secondary.https-address</name>
-<value>192.168.204.181:9869</value>
+<value>192.168.137.102:9870</value>
 </property>
 </configuration>
 

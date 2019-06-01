@@ -19,11 +19,11 @@
 <configuration>
 <property>
 <name>fs.defaultFS</name>
-<value>hdfs://192.168.204.181:9000</value>
+<value>hdfs://192.168.137.101:9820</value>
 </property>
 <property>
 <name>hadoop.tmp.dir</name>
-<value>/usr/local/hadoop-3.1.2</value>
+<value>/opt/hadoopdata/</value>
 </property>
 </configuration>
 
